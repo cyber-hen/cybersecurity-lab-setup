@@ -1,0 +1,77 @@
+# 🧪 Cyber Security Home Lab Setup Guide
+
+This guide outlines the hardware specs, network configuration, and step-by-step instructions to replicate the Cyber Security Home Lab used for threat detection, incident response, and firewall administration.
+
+---
+
+## 🖥️ Virtual Machine Specifications
+
+| Component           | Specs                          |
+|--------------------|---------------------------------|
+| Hypervisor         | VMware Workstation / Fusion     |
+| Host OS            | Windows 10 / macOS              |
+| RAM per VM         | 2–4 GB                          |
+| Disk per VM        | 20–40 GB                        |
+| Guest OS (Attack)  | Kali Linux                      |
+| Guest OS (Target)  | Windows Server (Domain Controller), Windows 10 Clients |
+| Guest OS (SIEM)    | Splunk Enterprise (Linux-based) |
+| Guest OS (Firewall)| OPNsense                        |
+
+---
+
+## 🌐 Network Adapter Settings
+
+| VM Role           | Adapter Type | Network Segment | IP Address         |
+|------------------|--------------|------------------|--------------------|
+| Kali Linux       | Bridged      | Vmnet2 (Attacker)| `192.168.233.133`  |
+| OPNsense Firewall| Bridged      | Vmnet3 (Gateway) | `192.168.29.130`   |
+| Target Network   | Bridged      | Vmnet4 (Internal)| `192.168.200.133`  |
+| Splunk SIEM      | Bridged      | Vmnet5 (SIEM)    | `192.168.246.133`  |
+| SPAN Port        | Custom       | Vmnet6 (Mirror)  | Interface `em4`    |
+
+---
+
+## ⚙️ Step-by-Step Setup Instructions
+
+### 1. **Install VMware Workstation or Fusion**
+- Ensure virtualization is enabled in BIOS
+- Create custom virtual networks (Vmnet2–Vmnet6)
+
+### 2. **Deploy Kali Linux VM**
+- Download ISO from [kali.org](https://www.kali.org/)
+- Assign to Vmnet2
+- Install tools: Nmap, Metasploit, Wireshark
+
+### 3. **Deploy OPNsense Firewall**
+- Download ISO from [opnsense.org](https://opnsense.org/)
+- Assign WAN to Vmnet3, LAN to Vmnet4
+- Configure NAT, firewall rules, and DHCP
+
+### 4. **Deploy Target Network**
+- Install Windows Server (Domain Controller)
+- Add Windows 10 clients
+- Join domain and simulate user activity
+
+### 5. **Deploy Splunk SIEM**
+- Install Splunk Enterprise on Linux
+- Assign to Vmnet5
+- Install Universal Forwarder on target machines
+- Configure inputs and dashboards
+
+### 6. **Configure SPAN Port**
+- Mirror traffic from Vmnet4 to Vmnet6
+- Assign interface `em4` in Splunk to capture mirrored traffic
+
+---
+
+## 🛠️ Troubleshooting Tips
+
+- **VMs not communicating**: Check adapter type and IP ranges
+- **Splunk not receiving logs**: Verify forwarder config and firewall rules
+- **OPNsense rules not applying**: Reboot firewall and check rule order
+- **SPAN port not capturing**: Ensure correct interface binding in Splunk
+
+---
+
+> This guide is intended for educational and professional development purposes. All IPs are internal and non-routable.
+
